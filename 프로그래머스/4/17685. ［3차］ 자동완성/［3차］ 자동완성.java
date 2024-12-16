@@ -1,53 +1,31 @@
 import java.util.*;
-
-class Solution{
-    class TrieNode{
-        Map<Character, TrieNode> child;
-        int cnt;
-        TrieNode(){
-            child = new HashMap<>();
-            cnt = 0;
+class Solution {
+    public int solution(String[] words) {
+        Arrays.sort(words);
+        int count = 0;
+        for (int i = 0; i < words.length; ++i) {
+            int len = compare(words, i);
+            if (len == words[i].length()) count += len;
+            else count += (len + 1);
         }
+        return count;
     }
-    static TrieNode root;
-    public int solution(String[] words){
-        root = new TrieNode();
-        int answer = 0;
-        
-        // 트라이 노드에 단어 넣기
-        for(String word:words){
-            insert(word);
+    private int compare(String[] words, int i) {
+        int len = 0;
+        if (i > 0) {
+            len = prefix(words[i - 1], words[i]);
         }
-        
-        // 검색
-        for(String word:words){
-            answer += search(word);
+        if (i < words.length - 1) {
+            len = Math.max(len, prefix(words[i], words[i + 1]));
         }
-        
-        return answer;
+        return len;
     }
-
-
-    // 단어 삽입
-    void insert(String word){
-        TrieNode tn = root; // 루트 노드 불러오기
-        for(char c:word.toCharArray()){
-            tn.child.putIfAbsent(c, new TrieNode()); // 자식이 단어를 가지고 있지 않으면, 새로 노드 생성
-            tn = tn.child.get(c); // 노드 위치를 자식으로 변경
-            tn.cnt++;
+    private int prefix(String s1, String s2) {
+        int len = 0;
+        for (int i = 0; i < Math.min(s1.length(), s2.length()); ++i) {
+            if (s1.charAt(i) == s2.charAt(i)) len++;
+            else break;
         }
-    }
-
-    // 단어 검색
-    int search(String word){
-        TrieNode tn = root;
-        int cnt = 0;
-        for(char c:word.toCharArray()){
-            if(tn.cnt==1) return cnt; // 해당 문자로 시작하는 단어가 없음을 의미
-            tn = tn.child.get(c); // 이어지는 문자가 있다면
-            cnt++;
-        }
-        // 끝까지 갔다면, 단어 모두 입력해야 함
-        return cnt;
+        return len;
     }
 }
